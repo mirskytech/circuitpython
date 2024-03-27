@@ -102,47 +102,13 @@ SPI is faster than UART in communication with the 8285, but requires a few more 
 
 The sequence is explained here: https://docs.espressif.com/projects/esp-at/en/release-v2.2.0.0_esp32c3/Compile_and_Develop/How_to_implement_SPI_AT.html
 
-And even more detail here: https://github.com/espressif/esp-at/tree/master/examples/at_spi_master/spi/esp32_c_series
-
 As implemented by Seeed in micropython's source code: https://github.com/IsQianGe/rp2040-spi/blob/master/ports/rp2/wifi_spi.c#L753
 
-```circuitpython
-from adafruit_bus_device.spi_device import SPIDevice
-import busio
+#### Work In Progress
 
-spi_bus = busio.SPI(board.HSPI_CLK, MISO=board.HSPI_MISO, MOSI=board.HSPI_MOSI)
-spi_device = SPIDevice(spi_bus, cs, baudrate=200000)
-```
+Using the basic [AT command send/receive](https://github.com/espressif/esp-at/tree/master/examples/at_spi_master/spi/esp32_c_series) sequence to test connection:
 
-Based on the esp32_c_series documentation:
-
-```circuitpython
-
-def sendCommand(cmd):
-    ''' _Work In Progress_ '''
-
-    # https://github.com/espressif/esp-at/tree/master/examples/at_spi_master/spi/esp32_c_series#1-master-requests-to-send-data
-    
-    master_requests_send = bytearray(b'\x01\x00\x00\xFE\x01\x04\x00')
-    with spi_device as spi:
-        spi.write(master_requests_send)
-        
-    # https://github.com/espressif/esp-at/tree/master/examples/at_spi_master/spi/esp32_c_series#2-master-sends-data
-    
-    # wait for 8285 ready (handshake high)
-    while not handshake.value:
-        pass
-      
-    # request slave status
-    request_slave_status = bytearray(b'\x02\x04\x00\x00\x00\x00\x00')
-    with spi_device as spi:
-        spi.write(master_read_status)
-    
-    # read slave status
-    with spi_device as spi:
-        slave_read = bytearray(7)
-        spi.readinto(slave_read)
-
-```
-
+- [pin initialization sequence](sample_code.py#L12)
+- [power on es8285 sequence](sample_code.py#L34)
+- [send AT command and read response](sample_code.py#L67)
 
